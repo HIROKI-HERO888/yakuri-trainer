@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>薬理 作用機序 5択トレーナー</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f5f5f5;
+    }
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 20px;
+    }
+    h1 {
+      font-size: 1.3rem;
+      margin-top: 0;
+      text-align: center;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #1565c0;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+    .mode-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .mode-btn {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #bbdefb;
+      background: #e3f2fd;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.1s ease, border-color 0.1s ease, transform 0.05s ease;
+    }
+    .mode-btn.active {
+      background: #1565c0;
+      color: #fff;
+      border-color: #1565c0;
+    }
+    .mode-btn:active {
+      transform: translateY(1px);
+    }
+
+    .question-box {
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+    }
+    .question-meta {
+      font-size: 0.8rem;
+      color: #757575;
+      margin-bottom: 4px;
+    }
+    .question-text {
+      font-weight: 600;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .question-drug {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+    .choices {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .choice-btn {
+      width: 100%;
+      text-align: left;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #ffffff;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: background 0.1s ease, box-shadow 0.1s ease,
+                  border-color 0.1s ease, transform 0.05s ease;
+    }
+    .choice-label {
+      font-weight: bold;
+      font-size: 0.9rem;
+      min-width: 1.5em;
+    }
+    .choice-text {
+      flex: 1;
+    }
+    .choice-btn:hover {
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .choice-btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+    .choice-btn.correct {
+      background: #e8f5e9;
+      border-color: #66bb6a;
+    }
+    .choice-btn.wrong {
+      background: #ffebee;
+      border-color: #ef5350;
+    }
+    .choice-btn.disabled {
+      opacity: 0.8;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+    .feedback {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.correct {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+    }
+    .feedback.wrong {
+      background: #ffebee;
+      border: 1px solid #ffcdd2;
+      color: #c62828;
+    }
+    .feedback-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .controls {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.2s;
+    }
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+    .btn-next {
+      background: #2196f3;
+      color: #ffffff;
+    }
+    .btn-reset {
+      background: #9e9e9e;
+      color: #ffffff;
+    }
+    .stats {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+    }
+    .footer {
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: #757575;
+      text-align: center;
+    }
+    @media (max-width: 480px) {
+      .controls {
+        justify-content: stretch;
+      }
+      .btn {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="tag">薬理・作用機序・5択問題</div>
+    <h1>薬理 作用機序 トレーナー（5択）</h1>
+
+    <!-- 出題範囲切替 -->
+    <div class="mode-bar">
+      <button class="mode-btn active" data-mode="all">全て</button>
+      <button class="mode-btn" data-mode="自律神経系">自律神経系のみ</button>
+      <button class="mode-btn" data-mode="利尿薬">利尿薬のみ</button>
+    </div>
+
+    <div class="question-box">
+      <div id="question-meta" class="question-meta"></div>
+      <div id="question-text" class="question-text">読み込み中…</div>
+      <div id="question-drug" class="question-drug"></div>
+
+      <div id="choices" class="choices">
+        <!-- 選択肢ボタンがここに生成される -->
+      </div>
+
+      <div id="feedback" class="feedback">
+        <div id="feedback-title" class="feedback-title"></div>
+        <div id="feedback-body"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="reset-btn" class="btn btn-reset">成績リセット</button>
+      <button id="next-btn" class="btn btn-next">次の問題 ▶</button>
+    </div>
+
+    <div class="stats">
+      <div>回答数: <span id="total-count">0</span>問</div>
+      <div>正解数: <span id="correct-count">0</span>問</div>
+      <div>正答率: <span id="accuracy">0</span>%</div>
+    </div>
+
+    <div class="footer">
+      ※薬剤師国家試験レベルを参考にした「作用機序」オリジナル5択問題です。<br>
+      学習記録はブラウザの localStorage に保存されます。
+    </div>
+  </div>
+
+  <script>
+    // ==== 薬理 作用機序 5択問題（オリジナル） ====
+    const questions = [
+      // ===== 自律神経系（20問） =====
+      {
+        id: 1,
+        category: "自律神経系",
+        drug: "メトプロロール",
+        question: "メトプロロールの主な作用機序として正しいのはどれか。",
+        choices: [
+          "心筋のβ1受容体を遮断し、心拍数・心収縮力を低下させる。",
+          "血管平滑筋のL型Caチャネルを遮断し、末梢血管を拡張させる。",
+          "腎集合管のENaCを直接阻害し、Na⁺再吸収を抑制する。",
+          "肺のβ2受容体を選択的に刺激し、気管支を拡張させる。",
+          "血小板のADP受容体を遮断し、血小板凝集を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "メトプロロールは選択的β1遮断薬で、心筋のβ1受容体を遮断し心拍数・心収縮力を低下させて心筋酸素需要を減少させる。"
+      },
+      {
+        id: 2,
+        category: "自律神経系",
+        drug: "プロプラノロール",
+        question: "プロプラノロールの薬理作用として正しいのはどれか。",
+        choices: [
+          "β1受容体とβ2受容体の両方を遮断する。",
+          "選択的にβ2受容体のみを遮断する。",
+          "α1受容体のみを遮断する。",
+          "ムスカリン受容体を遮断する。",
+          "ニコチン受容体を遮断する。"
+        ],
+        correctIndex: 0,
+        explanation: "プロプラノロールは非選択的β遮断薬で、β1・β2受容体の両方を遮断する。"
+      },
+      {
+        id: 3,
+        category: "自律神経系",
+        drug: "カルベジロール",
+        question: "カルベジロールの特徴的な作用機序として正しいのはどれか。",
+        choices: [
+          "α1受容体とβ受容体の両方を遮断する。",
+          "β2受容体のみを選択的に刺激する。",
+          "ムスカリン受容体を刺激する。",
+          "N型Caチャネルを遮断する。",
+          "Na⁺チャネルを遮断する。"
+        ],
+        correctIndex: 0,
+        explanation: "カルベジロールはα1・β遮断作用を併せ持つ薬で、心不全や高血圧に用いられる。"
+      },
+      {
+        id: 4,
+        category: "自律神経系",
+        drug: "サルブタモール",
+        question: "サルブタモールの気管支拡張作用の機序として正しいのはどれか。",
+        choices: [
+          "β2受容体を刺激し、cAMP増加を介して気管支平滑筋を弛緩させる。",
+          "M3ムスカリン受容体を遮断し、気管支収縮を抑制する。",
+          "ロイコトリエン受容体を遮断し、気道炎症を抑制する。",
+          "H1受容体を遮断し、アレルギー反応を抑制する。",
+          "Na⁺チャネルを遮断し、気管支平滑筋の活動電位発生を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "サルブタモールは短時間作用型β2受容体刺激薬で、cAMP増加により気管支平滑筋を弛緩させる。"
+      },
+      {
+        id: 5,
+        category: "自律神経系",
+        drug: "サルメテロール",
+        question: "サルメテロールの作用機序として正しいのはどれか。",
+        choices: [
+          "長時間作用型β2受容体刺激薬として、気管支平滑筋の弛緩を持続させる。",
+          "短時間作用型β1受容体刺激薬として、心拍数を増加させる。",
+          "ムスカリン受容体を遮断して気管支を拡張する。",
+          "H2受容体を遮断して胃酸分泌を抑制する。",
+          "ロイコトリエン生成を阻害して炎症を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "サルメテロールはLABA（長時間作用型β2刺激薬）で、喘息やCOPDの維持療法に用いられる。"
+      },
+      {
+        id: 6,
+        category: "自律神経系",
+        drug: "イプラトロピウム",
+        question: "イプラトロピウムの作用機序として正しいのはどれか。",
+        choices: [
+          "ムスカリン受容体を遮断し、迷走神経を介する気管支収縮を抑制する。",
+          "β2受容体を刺激し、気管支平滑筋を弛緩させる。",
+          "H1受容体を遮断し、アレルギー反応を抑制する。",
+          "ロイコトリエン受容体を遮断し、気道炎症を抑制する。",
+          "Na⁺チャネルを遮断し、神経伝導を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "イプラトロピウムは吸入抗コリン薬で、ムスカリン受容体遮断により気管支拡張をもたらす。"
+      },
+      {
+        id: 7,
+        category: "自律神経系",
+        drug: "チオトロピウム",
+        question: "チオトロピウムの特徴として正しいのはどれか。",
+        choices: [
+          "長時間作用型の吸入抗コリン薬である。",
+          "短時間作用型β2刺激薬である。",
+          "長時間作用型β1遮断薬である。",
+          "Na⁺チャネル遮断薬である。",
+          "MAO阻害薬である。"
+        ],
+        correctIndex: 0,
+        explanation: "チオトロピウムはLAMA（長時間作用型抗コリン薬）で、COPDなどの維持療法に用いられる。"
+      },
+      {
+        id: 8,
+        category: "自律神経系",
+        drug: "ピロカルピン",
+        question: "ピロカルピンの作用機序として正しいのはどれか。",
+        choices: [
+          "ムスカリン受容体を刺激し、縮瞳や外分泌亢進を起こす。",
+          "ムスカリン受容体を遮断し、散瞳を起こす。",
+          "ニコチン受容体を刺激し、骨格筋収縮を起こす。",
+          "β2受容体を刺激し、気管支を拡張する。",
+          "α1受容体を刺激し、血管収縮を起こす。"
+        ],
+        correctIndex: 0,
+        explanation: "ピロカルピンはムスカリン受容体作動薬で、緑内障や唾液分泌低下に用いられる。"
+      },
+      {
+        id: 9,
+        category: "自律神経系",
+        drug: "ベタネコール",
+        question: "ベタネコールの作用として正しいのはどれか。",
+        choices: [
+          "ムスカリン受容体を刺激し、膀胱平滑筋収縮と排尿を促進する。",
+          "ムスカリン受容体を遮断し、尿閉を悪化させる。",
+          "β1受容体を刺激し、心拍数を増加させる。",
+          "α1受容体を刺激し、排尿を抑制する。",
+          "ニコチン受容体を遮断し、筋弛緩を起こす。"
+        ],
+        correctIndex: 0,
+        explanation: "ベタネコールはムスカリン受容体作動薬で、排尿困難などに用いられる。"
+      },
+      {
+        id: 10,
+        category: "自律神経系",
+        drug: "ネオスチグミン",
+        question: "ネオスチグミンの作用機序として正しいのはどれか。",
+        choices: [
+          "アセチルコリンエステラーゼを可逆的に阻害し、ACh濃度を上昇させる。",
+          "アセチルコリンエステラーゼを不可逆的に阻害する。",
+          "ムスカリン受容体を遮断する。",
+          "ニコチン受容体を遮断する。",
+          "GABAトランスアミナーゼを阻害する。"
+        ],
+        correctIndex: 0,
+        explanation: "ネオスチグミンは可逆的AChE阻害薬で、重症筋無力症などに用いられる。"
+      },
+      {
+        id: 11,
+        category: "自律神経系",
+        drug: "エドロホニウム",
+        question: "エドロホニウムの特徴として正しいのはどれか。",
+        choices: [
+          "超短時間作用型の可逆的アセチルコリンエステラーゼ阻害薬である。",
+          "不可逆的なAChE阻害薬である。",
+          "ムスカリン受容体拮抗薬である。",
+          "ニコチン受容体拮抗薬である。",
+          "β2受容体刺激薬である。"
+        ],
+        correctIndex: 0,
+        explanation: "エドロホニウムは超短時間作用型のAChE阻害薬で、重症筋無力症の診断などに用いられる。"
+      },
+      {
+        id: 12,
+        category: "自律神経系",
+        drug: "プラリドキシム",
+        question: "プラリドキシムの作用機序として正しいのはどれか。",
+        choices: [
+          "リン酸化されたAChEを再賦活し、有機リン中毒を改善する。",
+          "ムスカリン受容体を遮断する。",
+          "ニコチン受容体を遮断する。",
+          "β受容体を遮断する。",
+          "GABA受容体を刺激する。"
+        ],
+        correctIndex: 0,
+        explanation: "プラリドキシムはAChE再賦活薬で、有機リン系殺虫剤中毒の解毒に用いられる。"
+      },
+      {
+        id: 13,
+        category: "自律神経系",
+        drug: "アトロピン",
+        question: "アトロピンの作用として正しいのはどれか。",
+        choices: [
+          "ムスカリン受容体を遮断し、散瞳や心拍数増加をもたらす。",
+          "ムスカリン受容体を刺激し、縮瞳をもたらす。",
+          "ニコチン受容体を刺激し、筋収縮を起こす。",
+          "β2受容体を刺激し、気管支拡張をもたらす。",
+          "α1受容体を刺激し、血圧を上昇させる。"
+        ],
+        correctIndex: 0,
+        explanation: "アトロピンは代表的なムスカリン受容体拮抗薬で、散瞳や迷走神経抑制などの作用を示す。"
+      },
+      {
+        id: 14,
+        category: "自律神経系",
+        drug: "スコポラミン",
+        question: "スコポラミンの臨床上の用途として正しいのはどれか。",
+        choices: [
+          "ムスカリン受容体拮抗により、動揺病の予防に用いられる。",
+          "ニコチン受容体遮断により、筋弛緩薬として用いられる。",
+          "β1受容体遮断により、心不整脈治療に用いられる。",
+          "α1受容体刺激により、低血圧治療に用いられる。",
+          "H1受容体遮断により、アレルギー治療に用いられる。"
+        ],
+        correctIndex: 0,
+        explanation: "スコポラミンはムスカリン受容体拮抗薬で、特に動揺病（乗り物酔い）の予防に用いられる。"
+      },
+      {
+        id: 15,
+        category: "自律神経系",
+        drug: "フェニレフリン",
+        question: "フェニレフリンの作用機序として正しいのはどれか。",
+        choices: [
+          "α1受容体を刺激し、血管収縮と血圧上昇を引き起こす。",
+          "β1受容体を刺激し、心拍数を増加させる。",
+          "β2受容体を刺激し、気管支を拡張する。",
+          "ムスカリン受容体を遮断し、散瞳を起こす。",
+          "ニコチン受容体を遮断し、筋弛緩を起こす。"
+        ],
+        correctIndex: 0,
+        explanation: "フェニレフリンは選択的α1受容体刺激薬で、昇圧薬や鼻閉改善などに用いられる。"
+      },
+      {
+        id: 16,
+        category: "自律神経系",
+        drug: "ドブタミン",
+        question: "ドブタミンの主な作用機序として正しいのはどれか。",
+        choices: [
+          "β1受容体を刺激し、心収縮力を増強する。",
+          "β2受容体を刺激し、気管支を拡張する。",
+          "α1受容体を遮断し、血管を拡張する。",
+          "ムスカリン受容体を遮断し、心拍数を低下させる。",
+          "Na⁺チャネルを遮断し、活動電位を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "ドブタミンは主にβ1受容体を刺激し、心収縮力を増強するので心不全やショック時に用いられる。"
+      },
+      {
+        id: 17,
+        category: "自律神経系",
+        drug: "アドレナリン",
+        question: "アドレナリンの作用として正しいのはどれか。",
+        choices: [
+          "αおよびβ受容体を刺激し、用量により多様な作用を示す。",
+          "選択的にβ1受容体のみを遮断する。",
+          "ムスカリン受容体を遮断する。",
+          "ドパミン受容体のみを刺激する。",
+          "GABA受容体を刺激する。"
+        ],
+        correctIndex: 0,
+        explanation: "アドレナリンはα・β受容体のアゴニストで、用量と状況により血圧・心拍数などへの作用が変化する。"
+      },
+      {
+        id: 18,
+        category: "自律神経系",
+        drug: "ノルアドレナリン",
+        question: "ノルアドレナリンの主な循環作用として正しいのはどれか。",
+        choices: [
+          "主にα1受容体刺激により強い血管収縮と昇圧作用を示す。",
+          "主にβ2受容体刺激により血管拡張を起こす。",
+          "ムスカリン受容体刺激により心拍数を低下させる。",
+          "H1受容体遮断により血圧を低下させる。",
+          "ニコチン受容体遮断により血圧を安定させる。"
+        ],
+        correctIndex: 0,
+        explanation: "ノルアドレナリンは主にα1受容体を刺激して強い血管収縮と昇圧作用を示す。"
+      },
+      {
+        id: 19,
+        category: "自律神経系",
+        drug: "クロニジン",
+        question: "クロニジンの降圧作用の機序として正しいのはどれか。",
+        choices: [
+          "中枢のα2受容体を刺激し、交感神経活動を抑制する。",
+          "末梢のα1受容体を遮断し、血管を拡張する。",
+          "β1受容体を遮断し、心拍数を低下させる。",
+          "腎でNa⁺再吸収を抑制し、利尿を促進する。",
+          "ACEを阻害し、アンジオテンシンII産生を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "クロニジンは中枢性α2受容体刺激薬で、交感神経出力を抑制して降圧作用を示す。"
+      },
+      {
+        id: 20,
+        category: "自律神経系",
+        drug: "メチルドパ",
+        question: "メチルドパの降圧作用の主な機序として正しいのはどれか。",
+        choices: [
+          "中枢で偽神経伝達物質として作用し、交感神経活動を抑制する。",
+          "末梢α1受容体を直接遮断する。",
+          "β2受容体を刺激して血管拡張を起こす。",
+          "ムスカリン受容体を遮断して心拍数を増加させる。",
+          "レニン分泌を直接阻害する。"
+        ],
+        correctIndex: 0,
+        explanation: "メチルドパは中枢でα2受容体作動性偽神経伝達物質として働き、交感神経活動を抑制して降圧作用を示す。"
+      },
+
+      // ===== 利尿薬（10問） =====
+      {
+        id: 21,
+        category: "利尿薬",
+        drug: "フロセミド",
+        question: "フロセミドの主な作用部位と機序として正しいのはどれか。",
+        choices: [
+          "ヘンレ上行脚太い部でNa⁺-K⁺-2Cl⁻共輸送体を阻害し、Na⁺排泄を促進する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害し、軽度の利尿を起こす。",
+          "集合管のアルドステロン受容体を遮断し、Na⁺再吸収を抑制する。",
+          "近位尿細管での炭酸脱水酵素を阻害し、HCO₃⁻再吸収を抑制する。",
+          "集合管のバソプレシンV2受容体を遮断し、水再吸収を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "フロセミドはループ利尿薬で、ヘンレ上行脚太い部のNa⁺-K⁺-2Cl⁻共輸送体を阻害して強力な利尿を起こす。"
+      },
+      {
+        id: 22,
+        category: "利尿薬",
+        drug: "トラセミド",
+        question: "トラセミドの作用機序として正しいのはどれか。",
+        choices: [
+          "ヘンレ上行脚太い部のNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。",
+          "集合管のアルドステロン受容体を遮断する。",
+          "炭酸脱水酵素を阻害する。",
+          "V2受容体を遮断する。"
+        ],
+        correctIndex: 0,
+        explanation: "トラセミドもループ利尿薬で、フロセミドと同様にヘンレ上行脚太い部でNa⁺-K⁺-2Cl⁻共輸送体を阻害する。"
+      },
+      {
+        id: 23,
+        category: "利尿薬",
+        drug: "ヒドロクロロチアジド",
+        question: "ヒドロクロロチアジドの主な作用部位と機序として正しいのはどれか。",
+        choices: [
+          "遠位尿細管でNa⁺/Cl⁻共輸送体を阻害し、Na⁺排泄を促進する。",
+          "ヘンレ上行脚太い部でNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "集合管でENaCを阻害する。",
+          "近位尿細管で炭酸脱水酵素を阻害する。",
+          "V2受容体を刺激して水再吸収を促進する。"
+        ],
+        correctIndex: 0,
+        explanation: "ヒドロクロロチアジドはチアジド系利尿薬で、遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。"
+      },
+      {
+        id: 24,
+        category: "利尿薬",
+        drug: "トリクロルメチアジド",
+        question: "トリクロルメチアジドの作用機序として正しいのはどれか。",
+        choices: [
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害するチアジド系利尿薬である。",
+          "ループ利尿薬としてヘンレ上行脚で作用する。",
+          "K保持性利尿薬としてENaCを阻害する。",
+          "炭酸脱水酵素阻害薬として近位尿細管に作用する。",
+          "バソプレシンV2受容体拮抗薬である。"
+        ],
+        correctIndex: 0,
+        explanation: "トリクロルメチアジドもチアジド系利尿薬で、遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。"
+      },
+      {
+        id: 25,
+        category: "利尿薬",
+        drug: "スピロノラクトン",
+        question: "スピロノラクトンの作用機序として正しいのはどれか。",
+        choices: [
+          "集合管でアルドステロン受容体を遮断し、Na⁺再吸収を抑制しK⁺排泄を抑える。",
+          "集合管でENaCを直接阻害し、Na⁺再吸収を抑制する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。",
+          "ヘンレ上行脚のNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "近位尿細管の炭酸脱水酵素を阻害する。"
+        ],
+        correctIndex: 0,
+        explanation: "スピロノラクトンはアルドステロン拮抗薬で、集合管に作用しNa⁺再吸収とK⁺排泄を抑制する。"
+      },
+      {
+        id: 26,
+        category: "利尿薬",
+        drug: "エプレレノン",
+        question: "エプレレノンの特徴として正しいのはどれか。",
+        choices: [
+          "選択的アルドステロン受容体拮抗薬であり、K保持性利尿薬である。",
+          "非選択的β遮断薬であり、降圧薬として用いられる。",
+          "ループ利尿薬であり、強力な利尿作用を示す。",
+          "チアジド系利尿薬であり、遠位尿細管に作用する。",
+          "V2受容体拮抗薬であり、水利尿を起こす。"
+        ],
+        correctIndex: 0,
+        explanation: "エプレレノンはより選択性の高いアルドステロン拮抗薬で、K保持性利尿薬として用いられる。"
+      },
+      {
+        id: 27,
+        category: "利尿薬",
+        drug: "トリアムテレン",
+        question: "トリアムテレンの作用機序として正しいのはどれか。",
+        choices: [
+          "集合管のENaCを阻害し、Na⁺再吸収を抑制してK⁺保持性利尿をもたらす。",
+          "アルドステロン受容体を遮断する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。",
+          "ヘンレ上行脚のNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "近位尿細管の炭酸脱水酵素を阻害する。"
+        ],
+        correctIndex: 0,
+        explanation: "トリアムテレンはENaC阻害薬で、Na⁺再吸収を抑制しK保持性利尿を起こす。"
+      },
+      {
+        id: 28,
+        category: "利尿薬",
+        drug: "アミロライド",
+        question: "アミロライドの作用機序として正しいのはどれか。",
+        choices: [
+          "集合管のENaCを阻害し、Na⁺再吸収を抑制する。",
+          "アルドステロン受容体を遮断する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。",
+          "ヘンレ上行脚のNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "V2受容体を遮断する。"
+        ],
+        correctIndex: 0,
+        explanation: "アミロライドもENaC阻害薬で、K保持性利尿薬として用いられる。"
+      },
+      {
+        id: 29,
+        category: "利尿薬",
+        drug: "アセタゾラミド",
+        question: "アセタゾラミドの作用機序として正しいのはどれか。",
+        choices: [
+          "近位尿細管の炭酸脱水酵素を阻害し、HCO₃⁻再吸収を抑制する。",
+          "遠位尿細管のNa⁺/Cl⁻共輸送体を阻害する。",
+          "ヘンレ上行脚のNa⁺-K⁺-2Cl⁻共輸送体を阻害する。",
+          "集合管のENaCを阻害する。",
+          "V2受容体を拮抗し、水再吸収を抑制する。"
+        ],
+        correctIndex: 0,
+        explanation: "アセタゾラミドは炭酸脱水酵素阻害薬で、近位尿細管でのHCO₃⁻再吸収を抑える。高山病などにも用いられる。"
+      },
+      {
+        id: 30,
+        category: "利尿薬",
+        drug: "トルバプタン",
+        question: "トルバプタンの作用機序として正しいのはどれか。",
+        choices: [
+          "集合管のV2受容体を拮抗し、水再吸収を抑制する。",
+          "アルドステロン受容体を遮断する。",
+          "ENaCを阻害する。",
+          "Na⁺/Cl⁻共輸送体を阻害する。",
+          "Na⁺-K⁺-2Cl⁻共輸送体を阻害する。"
+        ],
+        correctIndex: 0,
+        explanation: "トルバプタンはV2受容体拮抗薬で、水利尿（アクアレシス）を起こす。"
+      }
+    ];
+
+    // ==== 状態管理 ====
+    let activeMode = "all"; // "all" | category名
+    let pool = [];
+    let currentIndex = 0;
+    let hasAnsweredCurrent = false;
+
+    const statsKey = "yakuri_moa_mcq_stats_v3";
+    let stats = {
+      total: 0,
+      correct: 0
+    };
+
+    // ==== DOM参照 ====
+    const questionMetaEl = document.getElementById("question-meta");
+    const questionTextEl = document.getElementById("question-text");
+    const questionDrugEl = document.getElementById("question-drug");
+    const choicesContainer = document.getElementById("choices");
+    const feedbackEl = document.getElementById("feedback");
+    const feedbackTitleEl = document.getElementById("feedback-title");
+    const feedbackBodyEl = document.getElementById("feedback-body");
+
+    const totalCountEl = document.getElementById("total-count");
+    const correctCountEl = document.getElementById("correct-count");
+    const accuracyEl = document.getElementById("accuracy");
+
+    const nextBtn = document.getElementById("next-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const modeButtons = Array.from(document.querySelectorAll(".mode-btn"));
+
+    // ==== ユーティリティ ====
+    function shuffle(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function loadStats() {
+      try {
+        const saved = localStorage.getItem(statsKey);
+        if (saved) {
+          const obj = JSON.parse(saved);
+          if (typeof obj.total === "number" && typeof obj.correct === "number") {
+            stats = obj;
+          }
+        }
+      } catch (e) {
+        console.warn("統計情報の読み込みに失敗しました", e);
+      }
+      updateStatsUI();
+    }
+
+    function saveStats() {
+      try {
+        localStorage.setItem(statsKey, JSON.stringify(stats));
+      } catch (e) {
+        console.warn("統計情報の保存に失敗しました", e);
+      }
+    }
+
+    function updateStatsUI() {
+      totalCountEl.textContent = stats.total;
+      correctCountEl.textContent = stats.correct;
+      const acc = stats.total > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : "0";
+      accuracyEl.textContent = acc;
+    }
+
+    function resetStats() {
+      if (!confirm("学習記録（回答数・正解数）をリセットしますか？")) return;
+      stats.total = 0;
+      stats.correct = 0;
+      saveStats();
+      updateStatsUI();
+    }
+
+    // ==== 出題管理 ====
+    function buildPool() {
+      const base = activeMode === "all"
+        ? questions
+        : questions.filter(q => q.category === activeMode);
+
+      pool = shuffle(base);
+      currentIndex = 0;
+    }
+
+    function getCurrentQuestion() {
+      if (!pool.length) {
+        buildPool();
+      }
+      return pool[currentIndex];
+    }
+
+    function renderQuestion() {
+      const q = getCurrentQuestion();
+      hasAnsweredCurrent = false;
+
+      const total = pool.length || 1;
+      questionMetaEl.textContent = `問題 ${currentIndex + 1} / ${total}　【${q.category}】`;
+      questionTextEl.textContent = q.question;
+      questionDrugEl.textContent = `薬剤：${q.drug}`;
+
+      // 既存の選択肢をクリア
+      choicesContainer.innerHTML = "";
+      feedbackEl.style.display = "none";
+      feedbackTitleEl.textContent = "";
+      feedbackBodyEl.textContent = "";
+
+      // 選択肢ボタン生成
+      const labels = ["A", "B", "C", "D", "E"];
+      q.choices.forEach((choiceText, index) => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.dataset.index = index.toString();
+
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "choice-label";
+        labelSpan.textContent = labels[index] + ".";
+
+        const textSpan = document.createElement("span");
+        textSpan.className = "choice-text";
+        textSpan.textContent = choiceText;
+
+        btn.appendChild(labelSpan);
+        btn.appendChild(textSpan);
+
+        btn.addEventListener("click", () => handleChoiceClick(index));
+
+        choicesContainer.appendChild(btn);
+      });
+    }
+
+    function handleChoiceClick(selectedIndex) {
+      if (hasAnsweredCurrent) {
+        return; // 1問につき1回答のみ
+      }
+      hasAnsweredCurrent = true;
+
+      const q = getCurrentQuestion();
+      const correctIndex = q.correctIndex;
+
+      // 統計更新
+      stats.total++;
+      if (selectedIndex === correctIndex) {
+        stats.correct++;
+      }
+      saveStats();
+      updateStatsUI();
+
+      // ボタン色変更
+      const buttons = Array.from(choicesContainer.getElementsByClassName("choice-btn"));
+      buttons.forEach((btn, index) => {
+        btn.classList.add("disabled");
+        if (index === correctIndex) {
+          btn.classList.add("correct");
+        }
+        if (index === selectedIndex && selectedIndex !== correctIndex) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      // フィードバック表示
+      feedbackEl.style.display = "block";
+      if (selectedIndex === correctIndex) {
+        feedbackEl.classList.remove("wrong");
+        feedbackEl.classList.add("correct");
+        feedbackTitleEl.textContent = "✅ 正解！";
+      } else {
+        feedbackEl.classList.remove("correct");
+        feedbackEl.classList.add("wrong");
+        feedbackTitleEl.textContent = "❌ 不正解";
+      }
+      const labels = ["A", "B", "C", "D", "E"];
+      feedbackBodyEl.textContent =
+        `正解は ${labels[correctIndex]}：${q.choices[correctIndex]}\n\n【解説】` +
+        (q.explanation || "（解説は準備中です）");
+    }
+
+    function showNextQuestion() {
+      if (!pool.length) buildPool();
+      currentIndex++;
+      if (currentIndex >= pool.length) {
+        buildPool();
+      }
+      renderQuestion();
+    }
+
+    function setMode(mode) {
+      activeMode = mode;
+      modeButtons.forEach(btn => {
+        const m = btn.getAttribute("data-mode");
+        btn.classList.toggle("active", m === mode);
+      });
+      buildPool();
+      renderQuestion();
+    }
+
+    // ==== イベント設定 ====
+    nextBtn.addEventListener("click", showNextQuestion);
+    resetBtn.addEventListener("click", resetStats);
+    modeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const m = btn.getAttribute("data-mode");
+        setMode(m);
+      });
+    });
+
+    // ==== 初期化 ====
+    loadStats();
+    buildPool();
+    renderQuestion();
+  </script>
+</body>
+</html>
