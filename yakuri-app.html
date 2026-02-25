@@ -411,7 +411,7 @@
         return;
       }
 
-      if (!questions.length) {
+      if (!questions.length && !isLoadingQuestions) {
         questionMetaEl.textContent = "問題が登録されていません。";
         questionTextEl.textContent =
           "スプレッドシートに問題を追加すると、ここに出題されます。";
@@ -594,4 +594,5 @@
   </script>
 </body>
 </html>
+
 
