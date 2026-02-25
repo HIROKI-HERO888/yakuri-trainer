@@ -187,7 +187,7 @@
 
     <!-- 問題表示 -->
     <div class="question-box">
-      <div id="question-meta" class="question-meta">読み込み中…</div>
+      <div id="question-meta" class="question-meta">スプレッドシートから問題を読み込み中…</div>
       <div id="question-text" class="question-text"></div>
       <div id="question-drug" class="question-drug"></div>
       <div id="choices" class="choices"></div>
@@ -221,171 +221,9 @@
   </div>
 
   <script>
-    // ===== 問題データ（サンプル：3問） =====
-    const questions = [
-         // ===== 問題データ =====
-    const questions = [
-      {
-        id: 1,
-        category: "自律神経系",
-        drug: "ミラベグロン",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "膀胱平滑筋のβ3受容体を刺激し、排尿筋を弛緩させて蓄尿機能を高める。",
-          "膀胱のムスカリン受容体を遮断し、排尿筋の過活動を抑制する。",
-          "腎臓のα1受容体を遮断し、糸球体濾過量を低下させる。",
-          "アセチルコリンエステラーゼを阻害し、膀胱のACh作用を増強する。",
-          "ニコチン受容体を遮断し、骨格筋を弛緩させる。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "ミラベグロンは膀胱のβ3受容体作動薬で、排尿筋を弛緩させて蓄尿量を増やし過活動膀胱を改善する。"
-      },
-      {
-        id: 2,
-        category: "自律神経系",
-        drug: "アトロピン",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "ムスカリン受容体を競合的に遮断し、副交感神経作用を抑制する。",
-          "ニコチン受容体を遮断し、神経筋接合部での伝達を抑制する。",
-          "β1受容体を遮断し、心拍数と心収縮力を低下させる。",
-          "α1受容体を遮断し、末梢血管を拡張させる。",
-          "アセチルコリンエステラーゼを阻害し、コリン作動性神経伝達を増強する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "アトロピンはムスカリン受容体拮抗薬で、瞳孔散大、心拍数増加、消化管運動抑制など副交感神経作用を抑える。"
-      },
-      {
-        id: 3,
-        category: "自律神経系",
-        drug: "ベタネコール",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "ムスカリン受容体を直接刺激し、消化管平滑筋や膀胱平滑筋を収縮させる。",
-          "ニコチン受容体を刺激し、骨格筋収縮を増強する。",
-          "β2受容体を刺激し、気管支平滑筋を弛緩させる。",
-          "α1受容体を刺激し、末梢血管を収縮させる。",
-          "ムスカリン受容体を遮断し、胃酸分泌を抑制する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "ベタネコールはムスカリン受容体作動薬で、排尿障害や消化管機能低下の改善に用いられる。"
-      },
-      {
-        id: 4,
-        category: "自律神経系",
-        drug: "プロプラノロール",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "心筋および血管のβ受容体を遮断し、心拍数・心収縮力を低下させる。",
-          "心筋のNaチャネルを遮断し、活動電位立ち上がりを抑制する。",
-          "L型Caチャネルを遮断し、血管平滑筋を弛緩させる。",
-          "アンジオテンシンII受容体を遮断し、RAA系を抑制する。",
-          "心筋のIf電流を抑制し、洞結節の自動能を低下させる。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "プロプラノロールは非選択的β遮断薬で、心拍数・心収縮力低下やレニン分泌抑制を介して降圧・抗不整脈作用を示す。"
-      },
-      {
-        id: 5,
-        category: "自律神経系",
-        drug: "プラリドキシム",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "リン酸化されたアセチルコリンエステラーゼを再賦活し、有機リン中毒を改善する。",
-          "ムスカリン受容体を遮断し、有機リン中毒の末梢症状を抑える。",
-          "ニコチン受容体を遮断し、骨格筋の興奮を抑制する。",
-          "アセチルコリン合成酵素を阻害し、ACh産生を低下させる。",
-          "ChE に対する不可逆的阻害を行い、ACh作用を完全に遮断する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "プラリドキシムはChE のリン酸化部位に結合して再賦活する解毒薬で、有機リン系農薬・神経ガス中毒に用いられる。"
-      },
-      {
-        id: 6,
-        category: "循環器系",
-        drug: "エナラプリル",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "ACEを阻害し、アンジオテンシンIIとアルドステロンの産生を抑制して血圧を低下させる。",
-          "アンジオテンシンII受容体を遮断し、レニン分泌を低下させる。",
-          "心筋のβ1受容体を遮断し、心拍数と収縮力を低下させる。",
-          "血管平滑筋のCaチャネルを遮断し、血管拡張作用を示す。",
-          "Naチャネルを遮断し、心筋の活動電位立ち上がりを抑制する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "エナラプリルはACE阻害薬で、RAA系を抑制して降圧作用を示し、心不全や腎保護にも用いられる。"
-      },
-      {
-        id: 7,
-        category: "循環器系",
-        drug: "アムロジピン",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "血管平滑筋のL型Caチャネルを遮断し、末梢血管を拡張させる。",
-          "心筋のNaチャネルを遮断し、活動電位立ち上がり速度を低下させる。",
-          "β1受容体を遮断し、心拍数と心収縮力を低下させる。",
-          "アンジオテンシンII受容体を遮断し、血管収縮を抑制する。",
-          "ヘンレ係蹄上行脚でNa⁺/K⁺/2Cl⁻共輸送体を阻害し、利尿作用を示す。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "アムロジピンはジヒドロピリジン系Ca拮抗薬で、主に動脈を拡張して降圧作用を示す。"
-      },
-      {
-        id: 8,
-        category: "循環器系",
-        drug: "フェントラミン",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "α受容体を競合的に遮断し、末梢血管を拡張させる。",
-          "β1受容体を遮断し、心拍数・心収縮力を低下させる。",
-          "アンジオテンシン変換酵素を阻害し、RAA系を抑制する。",
-          "Naチャネルを抑制し、心室興奮伝導を遅延させる。",
-          "ヘンレ係蹄でNa⁺再吸収を抑制し、利尿を促進する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "フェントラミンは非選択的α遮断薬で、血管拡張作用を持ち褐色細胞腫の診断などに用いられる。"
-      },
-      {
-        id: 9,
-        category: "感染症",
-        drug: "メロペネム",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "細菌の細胞壁合成を阻害するカルバペネム系抗菌薬で、広域スペクトルを有する。",
-          "細菌のリボソーム50Sサブユニットに結合し、タンパク質合成を阻害する。",
-          "DNAジャイレースを阻害し、DNA複製を阻害する。",
-          "葉酸合成系を2段階で阻害し、核酸合成を阻害する。",
-          "真菌細胞膜のエルゴステロール合成を阻害する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "メロペネムはカルバペネム系抗菌薬で、βラクタム環を介して細胞壁合成を阻害し、多くのグラム陽性・陰性菌に有効。"
-      },
-      {
-        id: 10,
-        category: "感染症",
-        drug: "レボフロキサシン",
-        question: "この薬の主な作用部位と機序として正しいのはどれか。",
-        choices: [
-          "DNAジャイレースおよびトポイソメラーゼIVを阻害し、DNA複製を阻害する。",
-          "細菌のリボソーム30Sサブユニットに結合し、タンパク質合成を阻害する。",
-          "βラクタム結合タンパク質に結合し、細胞壁合成を阻害する。",
-          "葉酸合成系を2段階で阻害し、核酸合成を抑制する。",
-          "真菌細胞膜のエルゴステロールに結合し、細胞膜透過性を亢進する。"
-        ],
-        correctIndex: 0,
-        explanation:
-          "レボフロキサシンはニューキノロン系抗菌薬で、DNAジャイレースとトポイソメラーゼIVを阻害してDNA複製を阻害する。"
-      }
-    ];
+    // ===== Google スプレッドシートから CSV を読む設定 =====
+    const SHEET_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/101kCpkpjiTj9CGlxLmijANnZdFZdjDkkpYQYSq5IVM0/export?format=csv&gid=0";
 
     // ===== 成績管理（全体＋カテゴリ別） =====
     const stats = {
@@ -393,7 +231,6 @@
       correct: 0,
       perCategory: {} // { "自律神経系": { total, correct }, ... }
     };
-
     const STORAGE_KEY = "yakuri_yakuri_stats_v2";
 
     // ===== DOM 取得 =====
@@ -413,10 +250,12 @@
     const catStatsBox = document.getElementById("cat-stats");
 
     // ===== 状態 =====
-    let activeMode = "all"; // "all" or category名
+    let questions = [];           // ← スプレッドシートから読み込む
+    let activeMode = "all";       // "all" or category名
     let pool = [];
     let currentIndex = 0;
     let hasAnsweredCurrent = false;
+    let isLoadingQuestions = true;
 
     // ===== ユーティリティ =====
     function shuffleArray(arr) {
@@ -426,6 +265,68 @@
         [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
+    }
+
+    // 簡易 CSV パーサ（カンマは使わない前提, ヘッダー付き）
+    function parseCsv(text) {
+      const lines = text
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+
+      if (lines.length < 2) return [];
+
+      const header = lines[0].split(",");
+      const idx = (name) => header.indexOf(name);
+
+      const categoryIdx = idx("category");
+      const drugIdx = idx("drug");
+      const questionIdx = idx("question");
+      const c1Idx = idx("choice1");
+      const c2Idx = idx("choice2");
+      const c3Idx = idx("choice3");
+      const c4Idx = idx("choice4");
+      const c5Idx = idx("choice5");
+      const correctIdx = idx("correctIndex");
+      const expIdx = idx("explanation");
+
+      const result = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",");
+        if (!cols[categoryIdx] || !cols[questionIdx]) continue;
+
+        const category = cols[categoryIdx] || "";
+        const drug = cols[drugIdx] || "";
+        const question = cols[questionIdx] || "";
+        const choices = [
+          cols[c1Idx] || "",
+          cols[c2Idx] || "",
+          cols[c3Idx] || "",
+          cols[c4Idx] || "",
+          cols[c5Idx] || ""
+        ].filter((c) => c !== "");
+
+        if (choices.length === 0) continue;
+
+        let correctIndex = 0;
+        if (correctIdx >= 0 && cols[correctIdx] !== undefined) {
+          const n = parseInt(cols[correctIdx], 10);
+          if (!isNaN(n) && n >= 0 && n < choices.length) correctIndex = n;
+        }
+
+        const explanation = expIdx >= 0 ? (cols[expIdx] || "") : "";
+
+        result.push({
+          id: i,
+          category,
+          drug,
+          question,
+          choices,
+          correctIndex,
+          explanation
+        });
+      }
+      return result;
     }
 
     // ===== 成績の保存・読み込み =====
@@ -480,6 +381,11 @@
 
     // ===== 出題プール =====
     function buildPool() {
+      if (!questions.length) {
+        pool = [];
+        currentIndex = 0;
+        return;
+      }
       const base =
         activeMode === "all"
           ? questions
@@ -496,14 +402,32 @@
 
     // ===== 問題表示 =====
     function renderQuestion() {
+      if (isLoadingQuestions) {
+        questionMetaEl.textContent = "スプレッドシートから問題を読み込み中…";
+        questionTextEl.textContent = "";
+        questionDrugEl.textContent = "";
+        choicesContainer.innerHTML = "";
+        feedbackEl.style.display = "none";
+        return;
+      }
+
+      if (!questions.length) {
+        questionMetaEl.textContent = "問題が登録されていません。";
+        questionTextEl.textContent =
+          "スプレッドシートに問題を追加すると、ここに出題されます。";
+        questionDrugEl.textContent = "";
+        choicesContainer.innerHTML = "";
+        feedbackEl.style.display = "none";
+        return;
+      }
+
       if (!pool.length) {
-        // このカテゴリに問題がないとき
         questionMetaEl.textContent =
           activeMode === "all"
-            ? "問題が登録されていません。"
-            : `カテゴリ：${activeMode}（問題準備中）`;
+            ? "この条件で出題できる問題がありません。"
+            : `カテゴリ：${activeMode} に該当する問題がありません。`;
         questionTextEl.textContent =
-          "このカテゴリの問題はまだ登録されていません。";
+          "スプレッドシート側のカテゴリ名がボタンの表記と一致しているか確認してください。";
         questionDrugEl.textContent = "";
         choicesContainer.innerHTML = "";
         feedbackEl.style.display = "none";
@@ -520,7 +444,7 @@
         currentIndex + 1
       } / ${total}　カテゴリ：${q.category}`;
       questionTextEl.textContent = q.question;
-      questionDrugEl.textContent = `薬剤：${q.drug}`;
+      questionDrugEl.textContent = q.drug ? `薬剤：${q.drug}` : "";
 
       choicesContainer.innerHTML = "";
       feedbackEl.style.display = "none";
@@ -529,7 +453,7 @@
 
       // ★ 選択肢をランダム並び替え（元の index も保持）
       const shuffledChoices = q.choices
-        .map((text, idx) => ({ text, idx })) // idx = 元の選択肢番号
+        .map((text, idx) => ({ text, idx }))
         .sort(() => Math.random() - 0.5);
 
       const labels = ["A", "B", "C", "D", "E"];
@@ -587,7 +511,7 @@
       }
 
       // カテゴリ別成績
-      const cat = q.category;
+      const cat = q.category || "未分類";
       if (!stats.perCategory[cat]) {
         stats.perCategory[cat] = { total: 0, correct: 0 };
       }
@@ -597,7 +521,7 @@
       }
 
       // 解説表示
-      feedbackBodyEl.textContent = q.explanation;
+      feedbackBodyEl.textContent = q.explanation || "";
       feedbackEl.style.display = "block";
 
       saveStats();
@@ -635,12 +559,38 @@
       gotoNextQuestion();
     });
 
+    // ===== スプレッドシートから問題読み込み =====
+    async function loadQuestionsFromSheet() {
+      try {
+        questionMetaEl.textContent = "スプレッドシートから問題を読み込み中…";
+        isLoadingQuestions = true;
+        const res = await fetch(SHEET_CSV_URL);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const text = await res.text();
+        const parsed = parseCsv(text);
+        questions = parsed;
+        isLoadingQuestions = false;
+        if (!questions.length) {
+          questionMetaEl.textContent = "スプレッドシートに有効な問題が見つかりませんでした。";
+        } else {
+          buildPool();
+          renderQuestion();
+        }
+      } catch (e) {
+        console.error(e);
+        isLoadingQuestions = false;
+        questionMetaEl.textContent =
+          "問題の読み込みに失敗しました。シートの公開設定やURLを確認してください。";
+        questionTextEl.textContent = "";
+        questionDrugEl.textContent = "";
+        choicesContainer.innerHTML = "";
+      }
+    }
+
     // ===== 初期化 =====
     loadStats();
     updateStatsUI();
-    buildPool();
-    renderQuestion();
+    loadQuestionsFromSheet();
   </script>
 </body>
 </html>
-
