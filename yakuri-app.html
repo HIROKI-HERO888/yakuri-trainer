@@ -268,28 +268,34 @@
     }
 
     function renderQuestion() {
-      const q = getCurrentQuestion();
-      hasAnsweredCurrent = false;
+  const q = getCurrentQuestion();
+  hasAnsweredCurrent = false;
 
-      const total = pool.length || 1;
-      questionMetaEl.textContent = `問題 ${currentIndex + 1} / ${total}　カテゴリ：${q.category}`;
-      questionTextEl.textContent = q.question;
-      questionDrugEl.textContent = `薬剤：${q.drug}`;
+  const total = pool.length || 1;
+  questionMetaEl.textContent = `問題 ${currentIndex + 1} / ${total}　カテゴリ：${q.category}`;
+  questionTextEl.textContent = q.question;
+  questionDrugEl.textContent = `薬剤：${q.drug}`;
 
-      choicesContainer.innerHTML = "";
-      feedbackEl.style.display = "none";
-      feedbackTitleEl.textContent = "";
-      feedbackBodyEl.textContent = "";
+  choicesContainer.innerHTML = "";
+  feedbackEl.style.display = "none";
+  feedbackTitleEl.textContent = "";
+  feedbackBodyEl.textContent = "";
 
-      const labels = ["A", "B", "C", "D", "E"];
-      q.choices.forEach((choiceText, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "choice-button";
-        btn.innerHTML = `<span class="choice-label">${labels[idx]}.</span>${choiceText}`;
-        btn.addEventListener("click", () => handleAnswer(idx));
-        choicesContainer.appendChild(btn);
-      });
-    }
+  // ★★★ 選択肢シャッフルここ ★★★
+  const shuffled = q.choices
+    .map((text, idx) => ({ text, idx })) // 元のインデックス保持
+    .sort(() => Math.random() - 0.5);   // 適当にシャッフル
+
+  const labels = ["A", "B", "C", "D", "E"];
+
+  shuffled.forEach((obj, orderIdx) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-button";
+    btn.innerHTML = `<span class="choice-label">${labels[orderIdx]}.</span>${obj.text}`;
+    btn.addEventListener("click", () => handleAnswer(obj.idx)); 
+    choicesContainer.appendChild(btn);
+  });
+}
 
     function handleAnswer(selectedIndex) {
       if (hasAnsweredCurrent) return;
@@ -350,3 +356,4 @@
   </script>
 </body>
 </html>
+
