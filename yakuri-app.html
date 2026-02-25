@@ -223,11 +223,27 @@
     <h1>薬理 作用機序 トレーナー（5択）</h1>
 
     <!-- 出題範囲切替 -->
-    <div class="mode-bar">
-      <button class="mode-btn active" data-mode="all">全て</button>
-      <button class="mode-btn" data-mode="自律神経系">自律神経系のみ</button>
-      <button class="mode-btn" data-mode="利尿薬">利尿薬のみ</button>
-    </div>
+    <div class="mode-buttons">
+  <!-- すべて -->
+  <button class="mode-button active" data-mode="all">全て</button>
+
+  <!-- 薬単ベースの薬理カテゴリ -->
+  <button class="mode-button" data-mode="自律神経系">自律神経系</button>
+  <button class="mode-button" data-mode="体性神経系">体性神経系</button>
+  <button class="mode-button" data-mode="中枢神経系">中枢神経系</button>
+  <button class="mode-button" data-mode="循環器系">循環器系</button>
+  <button class="mode-button" data-mode="泌尿器系">泌尿器系</button>
+  <button class="mode-button" data-mode="呼吸系">呼吸系</button>
+  <button class="mode-button" data-mode="消化器系">消化器系</button>
+  <button class="mode-button" data-mode="内分泌系">内分泌系</button>
+  <button class="mode-button" data-mode="代謝系">代謝系</button>
+  <button class="mode-button" data-mode="血液系">血液系</button>
+  <button class="mode-button" data-mode="目に作用">目に作用</button>
+  <button class="mode-button" data-mode="抗炎症薬">抗炎症薬</button>
+  <button class="mode-button" data-mode="免疫系">免疫系</button>
+  <button class="mode-button" data-mode="感染症">感染症</button>
+  <button class="mode-button" data-mode="抗悪性腫瘍薬">抗悪性腫瘍薬</button>
+</div>
 
     <div class="question-box">
       <div id="question-meta" class="question-meta"></div>
@@ -1427,6 +1443,7 @@
   </script>
 </body>
 </html>
+
 
 
 
