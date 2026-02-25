@@ -34,7 +34,10 @@
     p.lead { margin: 0 0 16px; font-size: 14px; color: #555; }
 
     .mode-buttons {
-      display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 16px;
     }
     .mode-button {
       padding: 4px 10px;
@@ -46,7 +49,10 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    .mode-button.active { background: #2563eb; color: #fff; }
+    .mode-button.active {
+      background: #2563eb;
+      color: #fff;
+    }
 
     .question-box {
       border-radius: 12px;
@@ -59,7 +65,12 @@
     .question-text { font-size: 15px; margin-bottom: 4px; }
     .question-drug { font-size: 13px; color: #2563eb; margin-bottom: 8px; }
 
-    .choices { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
     .choice-button {
       text-align: left;
       padding: 8px 10px;
@@ -69,9 +80,18 @@
       font-size: 14px;
       cursor: pointer;
     }
-    .choice-button.correct { border-color: #16a34a; background: #ecfdf3; }
-    .choice-button.wrong   { border-color: #dc2626; background: #fef2f2; }
-    .choice-label { font-weight: 600; margin-right: 4px; }
+    .choice-button.correct {
+      border-color: #16a34a;
+      background: #ecfdf3;
+    }
+    .choice-button.wrong {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+    .choice-label {
+      font-weight: 600;
+      margin-right: 4px;
+    }
 
     .feedback {
       display: none;
@@ -81,19 +101,37 @@
       margin-bottom: 12px;
     }
     .feedback.correct {
-      background: #ecfdf3; border: 1px solid #bbf7d0; color: #166534;
+      background: #ecfdf3;
+      border: 1px solid #bbf7d0;
+      color: #166534;
     }
     .feedback.wrong {
-      background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
     }
 
-    .controls { display: flex; gap: 8px; margin-bottom: 12px; }
-    .btn {
-      flex: 1; padding: 8px 12px; border-radius: 999px;
-      border: none; cursor: pointer; font-size: 14px;
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
     }
-    .btn-secondary { background: #e5e7eb; color: #374151; }
-    .btn-primary   { background: #2563eb; color: #fff; }
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
 
     .stats-box {
       font-size: 13px;
@@ -103,10 +141,18 @@
       border: 1px solid #e5e7eb;
       margin-bottom: 12px;
     }
-    .note { font-size: 12px; color: #6b7280; margin-top: 8px; line-height: 1.6; }
+    .note {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
 
     @media (max-width: 600px) {
-      .app { margin: 8px; padding: 12px; }
+      .app {
+        margin: 8px;
+        padding: 12px;
+      }
     }
   </style>
 </head>
@@ -119,6 +165,7 @@
       薬単ベースのカテゴリで、自分の弱い分野を集中的に鍛えられます。
     </p>
 
+    <!-- 出題範囲切替（薬単カテゴリ） -->
     <div class="mode-buttons">
       <button class="mode-button active" data-mode="all">全て</button>
       <button class="mode-button" data-mode="自律神経系">自律神経系</button>
@@ -138,6 +185,7 @@
       <button class="mode-button" data-mode="抗悪性腫瘍薬">抗悪性腫瘍薬</button>
     </div>
 
+    <!-- 問題表示 -->
     <div class="question-box">
       <div id="question-meta" class="question-meta">読み込み中…</div>
       <div id="question-text" class="question-text"></div>
@@ -149,11 +197,13 @@
       </div>
     </div>
 
+    <!-- ボタン -->
     <div class="controls">
       <button id="reset-stats" class="btn btn-secondary">成績リセット</button>
       <button id="next-question" class="btn btn-primary">次の問題 ▶</button>
     </div>
 
+    <!-- 成績表示 -->
     <div class="stats-box">
       <div>回答数: <span id="stat-total">0</span> 問</div>
       <div>正解数: <span id="stat-correct">0</span> 問</div>
@@ -162,7 +212,7 @@
     </div>
 
     <p class="note">
-      ※薬剤師国家試験レベルを参考にした「作用機序」オリジナル5択問題です。<br>
+      ※薬剤師国家試験レベルを参考にした「作用機序」オリジナル5択問題です。<br />
       学習記録はブラウザの localStorage に保存されます。
     </p>
     <p class="note">
@@ -171,6 +221,7 @@
   </div>
 
   <script>
+    // ===== 問題データ（サンプル：3問） =====
     const questions = [
       {
         id: 1,
@@ -185,7 +236,8 @@
           "ニコチン受容体を遮断し、骨格筋を弛緩させる。"
         ],
         correctIndex: 0,
-        explanation: "ミラベグロンは膀胱のβ3受容体作動薬で、排尿筋を弛緩させて蓄尿量を増やし過活動膀胱を改善する。"
+        explanation:
+          "ミラベグロンは膀胱のβ3受容体作動薬で、排尿筋を弛緩させて蓄尿量を増やし過活動膀胱を改善する。"
       },
       {
         id: 2,
@@ -200,7 +252,8 @@
           "Naチャネルを遮断し、心筋の活動電位立ち上がりを抑制する。"
         ],
         correctIndex: 0,
-        explanation: "エナラプリルはACE阻害薬で、RAA系を抑制して降圧作用を示す。"
+        explanation:
+          "エナラプリルはACE阻害薬で、RAA系（レニン–アンジオテンシン–アルドステロン系）を抑制して降圧作用を示す。"
       },
       {
         id: 3,
@@ -215,17 +268,21 @@
           "真菌細胞膜のエルゴステロール合成を阻害する。"
         ],
         correctIndex: 0,
-        explanation: "メロペネムはβラクタム系の一種として細胞壁合成を阻害し、多剤耐性菌にも用いられる。"
+        explanation:
+          "メロペネムはカルバペネム系抗菌薬で、βラクタム系の一種として細胞壁合成を阻害し多剤耐性菌にも用いられる。"
       }
     ];
 
-    let activeMode = "all";
-    let pool = [];
-    let currentIndex = 0;
-    let hasAnsweredCurrent = false;
+    // ===== 成績管理（全体＋カテゴリ別） =====
+    const stats = {
+      total: 0,
+      correct: 0,
+      perCategory: {} // { "自律神経系": { total, correct }, ... }
+    };
 
-    const stats = { total: 0, correct: 0 };
+    const STORAGE_KEY = "yakuri_yakuri_stats_v2";
 
+    // ===== DOM 取得 =====
     const questionMetaEl = document.getElementById("question-meta");
     const questionTextEl = document.getElementById("question-text");
     const questionDrugEl = document.getElementById("question-drug");
@@ -238,8 +295,17 @@
     const statTotalEl = document.getElementById("stat-total");
     const statCorrectEl = document.getElementById("stat-correct");
     const statRateEl = document.getElementById("stat-rate");
+    const modeButtons = document.querySelectorAll(".mode-button");
+    const catStatsBox = document.getElementById("cat-stats");
 
-    function shuffle(arr) {
+    // ===== 状態 =====
+    let activeMode = "all"; // "all" or category名
+    let pool = [];
+    let currentIndex = 0;
+    let hasAnsweredCurrent = false;
+
+    // ===== ユーティリティ =====
+    function shuffleArray(arr) {
       const a = [...arr];
       for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -248,70 +314,156 @@
       return a;
     }
 
+    // ===== 成績の保存・読み込み =====
+    function loadStats() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (typeof parsed.total === "number") stats.total = parsed.total;
+        if (typeof parsed.correct === "number") stats.correct = parsed.correct;
+        if (parsed.perCategory && typeof parsed.perCategory === "object") {
+          stats.perCategory = parsed.perCategory;
+        }
+      } catch (e) {
+        console.warn("stats load error", e);
+      }
+    }
+
+    function saveStats() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+      } catch (e) {
+        console.warn("stats save error", e);
+      }
+    }
+
+    // ===== 成績表示 =====
+    function updateCategoryStatsUI() {
+      let html = "<strong>カテゴリ別正答率</strong><br>";
+      const cats = Object.keys(stats.perCategory);
+      if (cats.length === 0) {
+        html += "まだ解答データがありません。<br>";
+      } else {
+        cats.forEach((cat) => {
+          const d = stats.perCategory[cat];
+          const rate =
+            d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
+          html += `${cat}：${rate}%（${d.correct}/${d.total}）<br>`;
+        });
+      }
+      catStatsBox.innerHTML = html;
+    }
+
     function updateStatsUI() {
       statTotalEl.textContent = stats.total;
       statCorrectEl.textContent = stats.correct;
-      const rate = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+      const rate =
+        stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
       statRateEl.textContent = rate;
+      updateCategoryStatsUI();
     }
 
+    // ===== 出題プール =====
     function buildPool() {
-      const base = activeMode === "all"
-        ? questions
-        : questions.filter(q => q.category === activeMode);
-      pool = shuffle(base);
+      const base =
+        activeMode === "all"
+          ? questions
+          : questions.filter((q) => q.category === activeMode);
+
+      pool = shuffleArray(base);
       currentIndex = 0;
     }
 
     function getCurrentQuestion() {
-      if (!pool.length) buildPool();
+      if (!pool.length) return null;
       return pool[currentIndex];
     }
 
+    // ===== 問題表示 =====
     function renderQuestion() {
-  const q = getCurrentQuestion();
-  hasAnsweredCurrent = false;
-
-  const total = pool.length || 1;
-  questionMetaEl.textContent = `問題 ${currentIndex + 1} / ${total}　カテゴリ：${q.category}`;
-  questionTextEl.textContent = q.question;
-  questionDrugEl.textContent = `薬剤：${q.drug}`;
-
-  choicesContainer.innerHTML = "";
-  feedbackEl.style.display = "none";
-  feedbackTitleEl.textContent = "";
-  feedbackBodyEl.textContent = "";
-
-  // ★★★ 選択肢シャッフルここ ★★★
-  const shuffled = q.choices
-    .map((text, idx) => ({ text, idx })) // 元のインデックス保持
-    .sort(() => Math.random() - 0.5);   // 適当にシャッフル
-
-  const labels = ["A", "B", "C", "D", "E"];
-
-  shuffled.forEach((obj, orderIdx) => {
-    const btn = document.createElement("button");
-    btn.className = "choice-button";
-    btn.innerHTML = `<span class="choice-label">${labels[orderIdx]}.</span>${obj.text}`;
-    btn.addEventListener("click", () => handleAnswer(obj.idx)); 
-    choicesContainer.appendChild(btn);
-  });
-}
-
-    function handleAnswer(selectedIndex) {
-      if (hasAnsweredCurrent) return;
-      hasAnsweredCurrent = true;
+      if (!pool.length) {
+        // このカテゴリに問題がないとき
+        questionMetaEl.textContent =
+          activeMode === "all"
+            ? "問題が登録されていません。"
+            : `カテゴリ：${activeMode}（問題準備中）`;
+        questionTextEl.textContent =
+          "このカテゴリの問題はまだ登録されていません。";
+        questionDrugEl.textContent = "";
+        choicesContainer.innerHTML = "";
+        feedbackEl.style.display = "none";
+        return;
+      }
 
       const q = getCurrentQuestion();
+      if (!q) return;
+
+      hasAnsweredCurrent = false;
+
+      const total = pool.length || 1;
+      questionMetaEl.textContent = `問題 ${
+        currentIndex + 1
+      } / ${total}　カテゴリ：${q.category}`;
+      questionTextEl.textContent = q.question;
+      questionDrugEl.textContent = `薬剤：${q.drug}`;
+
+      choicesContainer.innerHTML = "";
+      feedbackEl.style.display = "none";
+      feedbackTitleEl.textContent = "";
+      feedbackBodyEl.textContent = "";
+
+      // ★ 選択肢をランダム並び替え（元の index も保持）
+      const shuffledChoices = q.choices
+        .map((text, idx) => ({ text, idx })) // idx = 元の選択肢番号
+        .sort(() => Math.random() - 0.5);
+
+      const labels = ["A", "B", "C", "D", "E"];
+      shuffledChoices.forEach((obj, orderIdx) => {
+        const btn = document.createElement("button");
+        btn.className = "choice-button";
+
+        // 元のインデックスをボタンに記録
+        btn.dataset.index = obj.idx;
+
+        btn.innerHTML = `<span class="choice-label">${labels[orderIdx]}.</span>${obj.text}`;
+        btn.addEventListener("click", () => handleAnswer(obj.idx));
+
+        choicesContainer.appendChild(btn);
+      });
+    }
+
+    // ===== 回答処理 =====
+    function handleAnswer(selectedIndex) {
+      if (hasAnsweredCurrent) return;
+      if (!pool.length) return;
+
+      const q = getCurrentQuestion();
+      if (!q) return;
+
+      hasAnsweredCurrent = true;
+
       const buttons = choicesContainer.querySelectorAll(".choice-button");
 
-      buttons.forEach((btn, idx) => {
-        if (idx === q.correctIndex) btn.classList.add("correct");
-        if (idx === selectedIndex && idx !== q.correctIndex) btn.classList.add("wrong");
+      // ボタンごとに「元のインデックス」を見て色付け
+      buttons.forEach((btn) => {
+        const idx = Number(btn.dataset.index);
+
+        // 正解の選択肢 → 緑
+        if (idx === q.correctIndex) {
+          btn.classList.add("correct");
+        }
+
+        // 押された選択肢が不正解 → 赤
+        if (idx === selectedIndex && idx !== q.correctIndex) {
+          btn.classList.add("wrong");
+        }
       });
 
+      // 全体成績
       stats.total++;
-      if (selectedIndex === q.correctIndex) {
+      const isCorrect = selectedIndex === q.correctIndex;
+      if (isCorrect) {
         stats.correct++;
         feedbackEl.className = "feedback correct";
         feedbackTitleEl.textContent = "正解！";
@@ -319,45 +471,61 @@
         feedbackEl.className = "feedback wrong";
         feedbackTitleEl.textContent = "不正解…";
       }
+
+      // カテゴリ別成績
+      const cat = q.category;
+      if (!stats.perCategory[cat]) {
+        stats.perCategory[cat] = { total: 0, correct: 0 };
+      }
+      stats.perCategory[cat].total++;
+      if (isCorrect) {
+        stats.perCategory[cat].correct++;
+      }
+
+      // 解説表示
       feedbackBodyEl.textContent = q.explanation;
       feedbackEl.style.display = "block";
 
+      saveStats();
       updateStatsUI();
     }
 
+    // ===== 次の問題へ =====
     function gotoNextQuestion() {
       if (!pool.length) return;
       currentIndex = (currentIndex + 1) % pool.length;
       renderQuestion();
     }
 
-    const modeButtons = document.querySelectorAll(".mode-button");
-    modeButtons.forEach(btn => {
+    // ===== カテゴリ切替 =====
+    modeButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        modeButtons.forEach(b => b.classList.remove("active"));
+        modeButtons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         activeMode = btn.dataset.mode;
-        pool = [];
         buildPool();
         renderQuestion();
       });
     });
 
+    // ===== ボタン操作 =====
     btnResetStats.addEventListener("click", () => {
       stats.total = 0;
       stats.correct = 0;
+      stats.perCategory = {};
+      saveStats();
       updateStatsUI();
     });
 
-    btnNext.addEventListener("click", gotoNextQuestion);
+    btnNext.addEventListener("click", () => {
+      gotoNextQuestion();
+    });
 
+    // ===== 初期化 =====
+    loadStats();
     updateStatsUI();
     buildPool();
     renderQuestion();
   </script>
 </body>
 </html>
-
-
-
-
