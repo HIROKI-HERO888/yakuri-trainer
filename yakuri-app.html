@@ -1315,6 +1315,28 @@
       currentIndex = 0;
     }
 
+    // ←←←★ ここに入れる ★→→→
+
+// ==== 出題範囲切り替え（モードボタン） ====
+const modeButtons = document.querySelectorAll(".mode-button");
+
+modeButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+
+    // ボタンの見た目切り替え
+    modeButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // data-mode の値を activeMode に入れる
+    activeMode = btn.dataset.mode;
+
+    // 新しいカテゴリで問題を組み直す
+    pool = [];
+    buildPool();
+    renderQuestion();
+  });
+});
+
     function getCurrentQuestion() {
       if (!pool.length) {
         buildPool();
@@ -1443,6 +1465,7 @@
   </script>
 </body>
 </html>
+
 
 
 
