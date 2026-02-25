@@ -562,7 +562,7 @@
     // ===== スプレッドシートから問題読み込み =====
     async function loadQuestionsFromSheet() {
       try {
-        questionMetaEl.textContent = "スプレッドシートから問題を読み込み中…";
+        questionMetaEl.textContent = "";
         isLoadingQuestions = true;
         const res = await fetch(SHEET_CSV_URL);
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -594,5 +594,6 @@
   </script>
 </body>
 </html>
+
 
 
