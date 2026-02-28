@@ -165,29 +165,12 @@
       薬単ベースのカテゴリで、自分の弱い分野を集中的に鍛えられます。
     </p>
 
-    <!-- 出題範囲切替（薬単カテゴリ） -->
-    <div class="mode-buttons">
-      <button class="mode-button active" data-mode="all">全て</button>
-      <button class="mode-button" data-mode="自律神経系">自律神経系</button>
-      <button class="mode-button" data-mode="体性神経系">体性神経系</button>
-      <button class="mode-button" data-mode="中枢神経系">中枢神経系</button>
-      <button class="mode-button" data-mode="循環器系">循環器系</button>
-      <button class="mode-button" data-mode="泌尿器系">泌尿器系</button>
-      <button class="mode-button" data-mode="呼吸系">呼吸系</button>
-      <button class="mode-button" data-mode="消化器系">消化器系</button>
-      <button class="mode-button" data-mode="内分泌系">内分泌系</button>
-      <button class="mode-button" data-mode="代謝系">代謝系</button>
-      <button class="mode-button" data-mode="血液系">血液系</button>
-      <button class="mode-button" data-mode="目に作用">目に作用</button>
-      <button class="mode-button" data-mode="抗炎症薬">抗炎症薬</button>
-      <button class="mode-button" data-mode="免疫系">免疫系</button>
-      <button class="mode-button" data-mode="感染症">感染症</button>
-      <button class="mode-button" data-mode="抗悪性腫瘍薬">抗悪性腫瘍薬</button>
-    </div>
+    <!-- ★ カテゴリボタンは JS で自動生成する（最初は空でもOK） -->
+    <div class="mode-buttons"></div>
 
     <!-- 問題表示 -->
     <div class="question-box">
-      <div id="question-meta" class="question-meta"></div>
+      <div id="question-meta" class="question-meta">問題を読み込み中です…</div>
       <div id="question-text" class="question-text"></div>
       <div id="question-drug" class="question-drug"></div>
       <div id="choices" class="choices"></div>
@@ -231,7 +214,7 @@
       correct: 0,
       perCategory: {} // { "自律神経系": { total, correct }, ... }
     };
-    const STORAGE_KEY = "yakuri_yakuri_stats_v2";
+    const STORAGE_KEY = "yakuri_yakuri_stats_autoCat_v1";
 
     // ===== DOM 取得 =====
     const questionMetaEl = document.getElementById("question-meta");
@@ -246,8 +229,8 @@
     const statTotalEl = document.getElementById("stat-total");
     const statCorrectEl = document.getElementById("stat-correct");
     const statRateEl = document.getElementById("stat-rate");
-    const modeButtons = document.querySelectorAll(".mode-button");
     const catStatsBox = document.getElementById("cat-stats");
+    const modeButtonsContainer = document.querySelector(".mode-buttons");
 
     // ===== 状態 =====
     let questions = [];           // ← スプレッドシートから読み込む
@@ -269,7 +252,8 @@
 
     // 簡易 CSV パーサ（カンマは使わない前提, ヘッダー付き）
     function parseCsv(text) {
-      const lines = text
+      const raw = text.replace(/^\uFEFF/, ""); // BOM削除
+      const lines = raw
         .split(/\r?\n/)
         .map((l) => l.trim())
         .filter((l) => l.length > 0);
@@ -290,31 +274,46 @@
       const correctIdx = idx("correctIndex");
       const expIdx = idx("explanation");
 
+      // 必須カラムが見つからない場合は空配列
+      if (
+        categoryIdx === -1 ||
+        questionIdx === -1 ||
+        c1Idx === -1
+      ) {
+        console.warn("CSV header が想定と違います:", header);
+        return [];
+      }
+
       const result = [];
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(",");
-        if (!cols[categoryIdx] || !cols[questionIdx]) continue;
 
-        const category = cols[categoryIdx] || "";
-        const drug = cols[drugIdx] || "";
-        const question = cols[questionIdx] || "";
-        const choices = [
-          cols[c1Idx] || "",
-          cols[c2Idx] || "",
-          cols[c3Idx] || "",
-          cols[c4Idx] || "",
-          cols[c5Idx] || ""
-        ].filter((c) => c !== "");
+        const category = (cols[categoryIdx] || "").trim();
+        const drug = drugIdx >= 0 ? (cols[drugIdx] || "").trim() : "";
+        const question = (cols[questionIdx] || "").trim();
 
+        if (!category || !question) continue; // category or question が空はスキップ
+
+        const choicesRaw = [
+          c1Idx >= 0 ? (cols[c1Idx] || "").trim() : "",
+          c2Idx >= 0 ? (cols[c2Idx] || "").trim() : "",
+          c3Idx >= 0 ? (cols[c3Idx] || "").trim() : "",
+          c4Idx >= 0 ? (cols[c4Idx] || "").trim() : "",
+          c5Idx >= 0 ? (cols[c5Idx] || "").trim() : ""
+        ];
+        const choices = choicesRaw.filter((c) => c !== "");
         if (choices.length === 0) continue;
 
-        let correctIndex = 0;
+        let correctIndex = 0; // 0始まり（シート側も 0〜 で合わせる）
         if (correctIdx >= 0 && cols[correctIdx] !== undefined) {
           const n = parseInt(cols[correctIdx], 10);
-          if (!isNaN(n) && n >= 0 && n < choices.length) correctIndex = n;
+          if (!isNaN(n) && n >= 0 && n < choices.length) {
+            correctIndex = n;
+          }
         }
 
-        const explanation = expIdx >= 0 ? (cols[expIdx] || "") : "";
+        const explanation =
+          expIdx >= 0 ? (cols[expIdx] || "").trim() : "";
 
         result.push({
           id: i,
@@ -400,10 +399,86 @@
       return pool[currentIndex];
     }
 
+    // ===== カテゴリボタンの自動生成 =====
+    function renderModeButtons() {
+      if (!modeButtonsContainer) return;
+      modeButtonsContainer.innerHTML = "";
+
+      // 「全て」ボタン
+      const allBtn = document.createElement("button");
+      allBtn.className = "mode-button";
+      allBtn.dataset.mode = "all";
+      allBtn.textContent = "全て";
+      modeButtonsContainer.appendChild(allBtn);
+
+      // シートからカテゴリ一覧を抽出
+      const rawCats = questions
+        .map(q => q.category)
+        .filter(c => c && c !== "all");
+
+      let categories = Array.from(new Set(rawCats));
+
+      // 並び順を少しだけ調整（薬単ベース）
+      const ORDER = [
+        "自律神経系",
+        "体性神経系",
+        "中枢神経系",
+        "循環器系",
+        "泌尿器系",
+        "呼吸系",
+        "消化器系",
+        "内分泌系",
+        "代謝系",
+        "血液系",
+        "目に作用",
+        "抗炎症薬",
+        "免疫系",
+        "感染症",
+        "抗悪性腫瘍薬"
+      ];
+
+      categories.sort((a, b) => {
+        const ia = ORDER.indexOf(a);
+        const ib = ORDER.indexOf(b);
+        if (ia === -1 && ib === -1) return a.localeCompare(b);
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
+
+      // カテゴリボタンを追加
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "mode-button";
+        btn.dataset.mode = cat;
+        btn.textContent = cat;
+        modeButtonsContainer.appendChild(btn);
+      });
+
+      // ボタンにイベント付与
+      const buttons = modeButtonsContainer.querySelectorAll(".mode-button");
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          buttons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeMode = btn.dataset.mode;
+          buildPool();
+          renderQuestion();
+        });
+      });
+
+      // 初期状態：全て を active にする
+      buttons.forEach((btn) => {
+        if (btn.dataset.mode === activeMode) {
+          btn.classList.add("active");
+        }
+      });
+    }
+
     // ===== 問題表示 =====
     function renderQuestion() {
       if (isLoadingQuestions) {
-        questionMetaEl.textContent = "";
+        questionMetaEl.textContent = "問題を読み込み中です…";
         questionTextEl.textContent = "";
         questionDrugEl.textContent = "";
         choicesContainer.innerHTML = "";
@@ -427,7 +502,7 @@
             ? "この条件で出題できる問題がありません。"
             : `カテゴリ：${activeMode} に該当する問題がありません。`;
         questionTextEl.textContent =
-          "スプレッドシート側のカテゴリ名がボタンの表記と一致しているか確認してください。";
+          "スプレッドシート側のカテゴリ名が正しく入力されているか確認してください。";
         questionDrugEl.textContent = "";
         choicesContainer.innerHTML = "";
         feedbackEl.style.display = "none";
@@ -453,7 +528,7 @@
 
       // ★ 選択肢をランダム並び替え（元の index も保持）
       const shuffledChoices = q.choices
-        .map((text, idx) => ({ text, idx }))
+        .map((text, idx) => ({ text, idx })) // 0〜
         .sort(() => Math.random() - 0.5);
 
       const labels = ["A", "B", "C", "D", "E"];
@@ -535,17 +610,6 @@
       renderQuestion();
     }
 
-    // ===== カテゴリ切替 =====
-    modeButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        modeButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeMode = btn.dataset.mode;
-        buildPool();
-        renderQuestion();
-      });
-    });
-
     // ===== ボタン操作 =====
     btnResetStats.addEventListener("click", () => {
       stats.total = 0;
@@ -562,7 +626,7 @@
     // ===== スプレッドシートから問題読み込み =====
     async function loadQuestionsFromSheet() {
       try {
-        questionMetaEl.textContent = "";
+        questionMetaEl.textContent = "問題を読み込み中です…";
         isLoadingQuestions = true;
         const res = await fetch(SHEET_CSV_URL);
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -572,8 +636,14 @@
         isLoadingQuestions = false;
         if (!questions.length) {
           questionMetaEl.textContent = "スプレッドシートに有効な問題が見つかりませんでした。";
+          questionTextEl.textContent = "";
+          questionDrugEl.textContent = "";
+          choicesContainer.innerHTML = "";
         } else {
+          // ★ ここでカテゴリボタンも自動生成
+          activeMode = "all";
           buildPool();
+          renderModeButtons();
           renderQuestion();
         }
       } catch (e) {
@@ -594,7 +664,3 @@
   </script>
 </body>
 </html>
-
-
-
-
